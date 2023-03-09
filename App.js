@@ -1,110 +1,181 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Platform, PermissionsAndroid } from 'react-native';
+import { Camera } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
 
-const BeRealCopy = () => {
-  const [photos, setPhotos] = useState([]);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
-  const [friendPhotos, setFriendPhotos] = useState([]);
+export default function App() {
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [camera, setCamera] = useState(null);
+  const [image, setImage] = useState(null);
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
 
-  // Function to submit a photo
-  const submitPhoto = (photo) => {
-    setPhotos([...photos, photo]);
-  }
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+        setHasCameraPermission(false);
+        setHasGalleryPermission(false);
+        console.log('Sorry, this will not work on Sketch in an Android emulator. Try it on your device!');
+        return;
+      }
+      const { status: cameraStatus } = await Camera.requestPermissionsAsync();
+      setHasCameraPermission(cameraStatus === 'granted');
+      const { status: galleryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasGalleryPermission(galleryStatus === 'granted');
+    })();
+  }, []);
 
-  // Function to select a photo from the user's photos
-  const selectPhoto = (photo) => {
-    setSelectedPhoto(photo);
-  }
+  const takePicture = async () => {
+    if (camera) {
+      const { uri } = await camera.takePictureAsync();
+      setImage(uri);
+    }
+  };
 
-  // Function to fetch and display friend photos
-  const displayFriendPhotos = () => {
-    // Use some badass algorithm here to fetch friend photos
-    setFriendPhotos([...friendPhotos, ...fetchedPhotos]);
-  }
+  const pickImage = async () => {
+    const { cancelled, uri } = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!cancelled) {
+      setImage(uri);
+    }
+  };
+
+  const submitPhoto = () => {
+    if (image) {
+      setGalleryImages([...galleryImages, image]);
+      setImage(null);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Be Real Copy</Text>
-
-      {/* Component to submit a photo */}
-      <TouchableOpacity style={styles.button} onPress={() => submitPhoto(photo)}>
-        <Text style={styles.buttonText}>Submit a photo</Text>
-      </TouchableOpacity>
-
-      {/* Component to view user's photos */}
-      <ScrollView horizontal={true}>
-        {photos.map((photo, index) => (
-          <TouchableOpacity key={index} onPress={() => selectPhoto(photo)}>
-            <Image source={{ uri: photo }} style={styles.photo} />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Component to view selected photo */}
-      {selectedPhoto && (
-        <View style={styles.selectedPhotoContainer}>
-          <Image source={{ uri: selectedPhoto }} style={styles.selectedPhoto} />
+      <View style={styles.cameraContainer}>
+        {hasCameraPermission ? (
+          <>
+            <Camera
+              ref={(ref) => setCamera(ref)}
+              style={styles.camera}
+              type={Camera.Constants.Type.front}
+              ratio="4:3"
+              pictureSize="Medium"
+            />
+            <TouchableOpacity style={styles.cameraButton} onPress={takePicture}>
+              <Text style={styles.buttonText}>Take Picture</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text>No access to camera</Text>
+        )}
+      </View>
+      <View style={styles.imageContainer}>
+        {image && <Image source={{ uri: image }} style={styles.image} />}
+        <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
+          <Text style={styles.buttonText}>Pick Image from Gallery</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.galleryContainer}>
+        <Text style={styles.galleryTitle}>My Photos</Text>
+        <View style={styles.gallery}>
+          {galleryImages.map((uri) => (
+            <Image key={uri} source={{ uri }} style={styles.galleryImage} />
+          ))}
         </View>
-      )}
-
-      {/* Component to view friend photos */}
-      <ScrollView horizontal={true}>
-        {friendPhotos.map((photo, index) => (
-          <TouchableOpacity key={index}>
-            <Image source={{ uri: photo }} style={styles.photo} />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Component to fetch friend photos */}
-      <TouchableOpacity style={styles.button} onPress={() => displayFriendPhotos()}>
-        <Text style={styles.buttonText}>View friend photos</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+        <TouchableOpacity style={styles.submitButton} onPress={submitPhoto}>
+          <Text style={styles.buttonText}>Submit Photo</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.friendsGalleryContainer}>
+        <Text style={styles.galleryTitle}>My Friends' Photos</Text>
+        <View style={styles.gallery}>
+          <Image source={require('./dummy1.jpg')} style={styles.galleryImage} />
+          <Image source={require('./dummy2.jpg')} style
+={styles.galleryImage} />
+<Image source={require('./dummy3.jpg')} style={styles.galleryImage} />
+</View>
+</View>
+</View>
+);
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#008080',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  photo: {
-    width: 100,
-    height: 100,
-    margin: 5,
-  },
-  selectedPhotoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#eee',
-    padding: 10,
-    borderRadius: 5,
-    margin: 10,
-  },
-  selectedPhoto: {
-    width: 300,
-    height: 300,
-    },
-    });
-    
-    export default BeRealCopy;
+container: {
+flex: 1,
+backgroundColor: '#fff',
+alignItems: 'center',
+justifyContent: 'space-between',
+paddingTop: 50,
+paddingBottom: 30,
+},
+cameraContainer: {
+flex: 1,
+width: '100%',
+height: '50%',
+backgroundColor: '#000',
+justifyContent: 'flex-end',
+alignItems: 'center',
+},
+camera: {
+width: '100%',
+height: '100%',
+},
+cameraButton: {
+backgroundColor: '#fff',
+padding: 10,
+borderRadius: 5,
+margin: 20,
+},
+buttonText: {
+fontSize: 20,
+},
+imageContainer: {
+width: '100%',
+height: '30%',
+alignItems: 'center',
+},
+image: {
+width: '100%',
+height: '100%',
+resizeMode: 'contain',
+},
+galleryButton: {
+backgroundColor: '#fff',
+padding: 10,
+borderRadius: 5,
+margin: 20,
+},
+galleryContainer: {
+width: '100%',
+height: '20%',
+alignItems: 'center',
+},
+galleryTitle: {
+fontSize: 20,
+marginBottom: 10,
+},
+gallery: {
+flexDirection: 'row',
+flexWrap: 'wrap',
+justifyContent: 'center',
+alignItems: 'center',
+},
+galleryImage: {
+width: 100,
+height: 100,
+margin: 5,
+borderRadius: 5,
+},
+submitButton: {
+backgroundColor: '#fff',
+padding: 10,
+borderRadius: 5,
+marginTop: 20,
+},
+friendsGalleryContainer: {
+width: '100%',
+height: '20%',
+alignItems: 'center',
+},
+});
