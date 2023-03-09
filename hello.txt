@@ -1,1 +1,3 @@
 https://stackoverflow.com/questions/63594494/npm-start-not-working-for-react-native-setup
+https://stackoverflow.com/questions/54604991/expo-app-cant-load-project-with-message-this-is-taking-much-longer-than-it
+https://stackoverflow.com/questions/64734935/how-do-you-set-default-connection-to-tunnel-with-expo
