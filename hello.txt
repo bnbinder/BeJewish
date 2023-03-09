@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/63594494/npm-start-not-working-for-react-native-setup
