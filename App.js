@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Platform, PermissionsAndroid } from 'react-native';
-import { Camera } from 'expo-camera';
-import * as ImagePicker from 'expo-image-picker';
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  Platform,
+  PermissionsAndroid,
+} from "react-native";
+import { Camera } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
 
 export default function App() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -12,16 +20,19 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      if (Platform.OS === 'android' && !Constants.isDevice) {
+      if (Platform.OS === "android" && !Constants.isDevice) {
         setHasCameraPermission(false);
         setHasGalleryPermission(false);
-        console.log('Sorry, this will not work on Sketch in an Android emulator. Try it on your device!');
+        console.log(
+          "Sorry, this will not work on Sketch in an Android emulator. Try it on your device!"
+        );
         return;
       }
       const { status: cameraStatus } = await Camera.requestPermissionsAsync();
-      setHasCameraPermission(cameraStatus === 'granted');
-      const { status: galleryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasGalleryPermission(galleryStatus === 'granted');
+      setHasCameraPermission(cameraStatus === "granted");
+      const { status: galleryStatus } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasGalleryPermission(galleryStatus === "granted");
     })();
   }, []);
 
@@ -63,7 +74,7 @@ export default function App() {
               pictureSize="Medium"
             />
             <TouchableOpacity style={styles.cameraButton} onPress={takePicture}>
-              <Text style={styles.buttonText}>Take Picture</Text>
+              <Text style={styles.buttonText}>Wrap Tefillin</Text>
             </TouchableOpacity>
           </>
         ) : (
@@ -90,92 +101,91 @@ export default function App() {
       <View style={styles.friendsGalleryContainer}>
         <Text style={styles.galleryTitle}>My Friends' Photos</Text>
         <View style={styles.gallery}>
-          <Image source={require('./dummy1.jpg')} style={styles.galleryImage} />
-          <Image source={require('./dummy2.jpg')} style
-={styles.galleryImage} />
-<Image source={require('./dummy3.jpg')} style={styles.galleryImage} />
-</View>
-</View>
-</View>
-);
+          <Image source={require("./dummy1.jpg")} style={styles.galleryImage} />
+          <Image source={require("./dummy2.jpg")} style={styles.galleryImage} />
+          <Image source={require("./dummy3.jpg")} style={styles.galleryImage} />
+        </View>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-container: {
-flex: 1,
-backgroundColor: '#fff',
-alignItems: 'center',
-justifyContent: 'space-between',
-paddingTop: 50,
-paddingBottom: 30,
-},
-cameraContainer: {
-flex: 1,
-width: '100%',
-height: '50%',
-backgroundColor: '#000',
-justifyContent: 'flex-end',
-alignItems: 'center',
-},
-camera: {
-width: '100%',
-height: '100%',
-},
-cameraButton: {
-backgroundColor: '#fff',
-padding: 10,
-borderRadius: 5,
-margin: 20,
-},
-buttonText: {
-fontSize: 20,
-},
-imageContainer: {
-width: '100%',
-height: '30%',
-alignItems: 'center',
-},
-image: {
-width: '100%',
-height: '100%',
-resizeMode: 'contain',
-},
-galleryButton: {
-backgroundColor: '#fff',
-padding: 10,
-borderRadius: 5,
-margin: 20,
-},
-galleryContainer: {
-width: '100%',
-height: '20%',
-alignItems: 'center',
-},
-galleryTitle: {
-fontSize: 20,
-marginBottom: 10,
-},
-gallery: {
-flexDirection: 'row',
-flexWrap: 'wrap',
-justifyContent: 'center',
-alignItems: 'center',
-},
-galleryImage: {
-width: 100,
-height: 100,
-margin: 5,
-borderRadius: 5,
-},
-submitButton: {
-backgroundColor: '#fff',
-padding: 10,
-borderRadius: 5,
-marginTop: 20,
-},
-friendsGalleryContainer: {
-width: '100%',
-height: '20%',
-alignItems: 'center',
-},
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 50,
+    paddingBottom: 30,
+  },
+  cameraContainer: {
+    flex: 1,
+    width: "100%",
+    height: "50%",
+    backgroundColor: "#000",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  camera: {
+    width: "100%",
+    height: "100%",
+  },
+  cameraButton: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 5,
+    margin: 20,
+  },
+  buttonText: {
+    fontSize: 20,
+  },
+  imageContainer: {
+    width: "100%",
+    height: "30%",
+    alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
+  },
+  galleryButton: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 5,
+    margin: 20,
+  },
+  galleryContainer: {
+    width: "100%",
+    height: "20%",
+    alignItems: "center",
+  },
+  galleryTitle: {
+    fontSize: 20,
+    marginBottom: 10,
+  },
+  gallery: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  galleryImage: {
+    width: 100,
+    height: 100,
+    margin: 5,
+    borderRadius: 5,
+  },
+  submitButton: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  friendsGalleryContainer: {
+    width: "100%",
+    height: "20%",
+    alignItems: "center",
+  },
 });
