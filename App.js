@@ -7,6 +7,7 @@ import {
   Image,
   Platform,
   PermissionsAndroid,
+  ScrollView,
 } from "react-native";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
@@ -63,49 +64,58 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.cameraContainer}>
-        {hasCameraPermission ? (
-          <>
-            <Camera
-              ref={(ref) => setCamera(ref)}
-              style={styles.camera}
-              type={Camera.Constants.Type.front}
-              ratio="4:3"
-              pictureSize="Medium"
-            />
-            <TouchableOpacity style={styles.cameraButton} onPress={takePicture}>
-              <Text style={styles.buttonText}>Wrap Tefillin</Text>
+      <ScrollView style={{ flex: 1 }} >
+        <View style={styles.cameraContainer}>
+          {hasCameraPermission ? (
+            <>
+              <Camera
+                ref={(ref) => setCamera(ref)}
+                style={styles.camera}
+                type={Camera.Constants.Type.front}
+                ratio="4:3"
+                pictureSize="Medium"
+              />
+            </>
+          ) : (
+            <Text>No access to camera</Text>
+          )}
+        </View>
+        <TouchableOpacity style={styles.cameraButton} onPress={takePicture}>
+          <Text style={styles.buttonText}>Wrap Tefillin</Text>
+        </TouchableOpacity>
+        <View style={styles.imageContainer}>
+          {image && <Image source={{ uri: image }} style={styles.image} />}
+        </View>
+        <View style={{ flex: 1, flexDirection: "column" }}>
+          <View style={styles.galleryContainer}>
+            <TouchableOpacity style={styles.submitButton} onPress={submitPhoto}>
+              <Text style={styles.buttonText}>Submit Photo</Text>
             </TouchableOpacity>
-          </>
-        ) : (
-          <Text>No access to camera</Text>
-        )}
-      </View>
-      <View style={styles.imageContainer}>
-        {image && <Image source={{ uri: image }} style={styles.image} />}
-        <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
-          <Text style={styles.buttonText}>Pick Image from Gallery</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.galleryContainer}>
-        <Text style={styles.galleryTitle}>My Photos</Text>
-        <View style={styles.gallery}>
-          {galleryImages.map((uri) => (
-            <Image key={uri} source={{ uri }} style={styles.galleryImage} />
-          ))}
+            <View style={styles.gallery}>
+              {galleryImages.map((uri) => (
+                <Image key={uri} source={{ uri }} style={styles.galleryImage} />
+              ))}
+            </View>
+          </View>
+          <View style={styles.friendsGalleryContainer}>
+            <Text style={styles.galleryTitle}>My Friends' Photos</Text>
+            <View style={styles.gallery}>
+              <Image
+                source={require("./dummy1.jpg")}
+                style={styles.galleryImage}
+              />
+              <Image
+                source={require("./dummy2.jpg")}
+                style={styles.galleryImage}
+              />
+              <Image
+                source={require("./dummy3.jpg")}
+                style={styles.galleryImage}
+              />
+            </View>
+          </View>
         </View>
-        <TouchableOpacity style={styles.submitButton} onPress={submitPhoto}>
-          <Text style={styles.buttonText}>Submit Photo</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.friendsGalleryContainer}>
-        <Text style={styles.galleryTitle}>My Friends' Photos</Text>
-        <View style={styles.gallery}>
-          <Image source={require("./dummy1.jpg")} style={styles.galleryImage} />
-          <Image source={require("./dummy2.jpg")} style={styles.galleryImage} />
-          <Image source={require("./dummy3.jpg")} style={styles.galleryImage} />
-        </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -120,9 +130,8 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   cameraContainer: {
-    flex: 1,
     width: "100%",
-    height: "50%",
+    height: 300,
     backgroundColor: "#000",
     justifyContent: "flex-end",
     alignItems: "center",
@@ -132,7 +141,10 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   cameraButton: {
-    backgroundColor: "#fff",
+    backgroundColor: "red",
+    justifyContent: "flex-end",
+    fontColor: "white",
+    alignItems: "center",
     padding: 10,
     borderRadius: 5,
     margin: 20,
@@ -141,8 +153,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   imageContainer: {
+    paddingTop: 30,
     width: "100%",
-    height: "20%",
+    height: 150,
     alignItems: "center",
   },
   image: {
@@ -158,6 +171,7 @@ const styles = StyleSheet.create({
   },
   galleryContainer: {
     width: "100%",
+    flex: 1,
     height: "20%",
     alignItems: "center",
   },
@@ -184,8 +198,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   friendsGalleryContainer: {
+    flex: 1,
+    alignSelf: "stretch",
     width: "100%",
-    height: "20%",
+    height: 150,
     alignItems: "center",
+    marginTop: 20,
   },
 });
