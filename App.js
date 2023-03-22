@@ -12,6 +12,7 @@ import {
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 
+
 export default function App() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
@@ -29,7 +30,8 @@ export default function App() {
         );
         return;
       }
-      const { status: cameraStatus } = await Camera.requestPermissionsAsync();
+      const { status: cameraStatus } =
+        await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus === "granted");
       const { status: galleryStatus } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -38,10 +40,15 @@ export default function App() {
   }, []);
 
   const takePicture = async () => {
-    if (camera) {
-      const { uri } = await camera.takePictureAsync();
+    if (camera != null) {
+      const { uri } = await camera.takePictureAsync().catch((error) => {
+        console.log(error);
+      });
       setImage(uri);
+    } else {
+      console.log("wazzup");
     }
+    console.log("camera");
   };
 
   const pickImage = async () => {
@@ -64,7 +71,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{ flex: 1 }} >
+      <ScrollView style={{ flex: 1 }}>
         <View style={styles.cameraContainer}>
           {hasCameraPermission ? (
             <>
