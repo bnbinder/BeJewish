@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Button,
   StyleSheet,
@@ -20,15 +20,71 @@ export default function App() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
   const [image, setImage] = useState(null);
-  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
 
   const HomeScreen = ({ navigation }) => {
     return (
-      <Button
-        title="Go to Jane's profile"
-        onPress={() => navigation.navigate("Profile", { name: "Jane" })}
-      />
+      <View style={styles.container}>
+        <ScrollView style={{ flex: 1 }}>
+          <View style={styles.cameraContainer}>
+            {hasCameraPermission ? (
+              <>
+                <Camera
+                  ref={setCamera(ref)}
+                  style={styles.camera}
+                  type={Camera.Constants.Type.front}
+                  ratio="4:3"
+                  pictureSize="Medium"
+                />
+              </>
+            ) : (
+              <Text>No access to camera</Text>
+            )}
+          </View>
+          <TouchableOpacity style={styles.cameraButton} onPress={takePicture}>
+            <Text style={styles.buttonText}>Wrap Tefillin</Text>
+          </TouchableOpacity>
+          <View style={styles.imageContainer}>
+            {image && <Image source={{ uri: image }} style={styles.image} />}
+          </View>
+          <View style={{ flex: 1, flexDirection: "column" }}>
+            <View style={styles.galleryContainer}>
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={submitPhoto}
+              >
+                <Text style={styles.buttonText}>Submit Photo</Text>
+              </TouchableOpacity>
+              <View style={styles.gallery}>
+                {galleryImages.map((uri) => (
+                  <Image
+                    key={uri}
+                    source={{ uri }}
+                    style={styles.galleryImage}
+                  />
+                ))}
+              </View>
+            </View>
+            <View style={styles.friendsGalleryContainer}>
+              <Text style={styles.galleryTitle}>My Friends' Photos</Text>
+              <View style={styles.gallery}>
+                <Image
+                  source={require("./dummy1.jpg")}
+                  style={styles.galleryImage}
+                />
+                <Image
+                  source={require("./dummy2.jpg")}
+                  style={styles.galleryImage}
+                />
+                <Image
+                  source={require("./dummy3.jpg")}
+                  style={styles.galleryImage}
+                />
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
     );
   };
   const ProfileScreen = ({ navigation, route }) => {
@@ -54,17 +110,16 @@ export default function App() {
     })();
   }, []);
 
-  const takePicture = async () => {
+  const takePicture = useCallback(async () => {
     if (camera != null) {
       const { uri } = await camera.takePictureAsync().catch((error) => {
         console.log(error);
       });
       setImage(uri);
     } else {
-      console.log("wazzup");
+      console.log("camera is null");
     }
-    console.log("camera");
-  };
+  }, [camera]);
 
   const pickImage = async () => {
     const { cancelled, uri } = await ImagePicker.launchImageLibraryAsync({
