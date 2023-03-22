@@ -30,7 +30,7 @@ export default function App() {
             {hasCameraPermission ? (
               <>
                 <Camera
-                  ref={setCamera(ref)}
+                  ref={ref=>setCamera(ref)}
                   style={styles.camera}
                   type={Camera.Constants.Type.front}
                   ratio="4:3"
