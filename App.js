@@ -27,9 +27,18 @@ export default function App() {
   const [isSubmitPhotoScreen, setIsSubmitPhotoFullScreen] = useState(false);
   const [isPlaceHolderPhotoVisible, setIsPlaceHolderPhotoVisible] =
     useState(false);
+  const [chevruta, setChevruta] = useState(false);
+
   let sourceeImage = require("./dummy5.jpg");
-  let chevrutaBuff = false;
-  const randomPrompt = ["Donate to SOVA", "Study Torah"];
+  const randomPrompt = [
+    "Donate to SOVA",
+    "Study Torah",
+    "Wrap Tfillin",
+    "Celebrate Shabbat",
+    "Welcome In Shabbat",
+    "Celebrate Havdalah",
+  ];
+  const [prompt, setPrompt] = useState("Wrap Tfillin");
   const length = galleryImages.length;
   const galleryImagesFullScreen = Array.from({ length }, () => false);
 
@@ -48,6 +57,10 @@ export default function App() {
         <Button
           title="Chevrutim"
           onPress={() => navigation.navigate("Friends")}
+        ></Button>
+        <Button
+          title="About Us"
+          onPress={() => navigation.navigate("About Us")}
         ></Button>
         <Button
           title={isDevVisible ? "Hide" : "Show"}
@@ -70,7 +83,28 @@ export default function App() {
           title="Random Prompt"
           style={styles.submitButton}
           onPress={() => {
-            resetSubmitPhoto();
+            setRandomPrompt();
+          }}
+        ></Button>
+        <Button
+          title="Friday Prompt"
+          style={styles.submitButton}
+          onPress={() => {
+            setPrompt("Welcome In Shabbat");
+          }}
+        ></Button>
+        <Button
+          title="Saturday Prompt"
+          style={styles.submitButton}
+          onPress={() => {
+            setPrompt("Celebrate Shabbat");
+          }}
+        ></Button>
+        <Button
+          title="Sunday Prompt"
+          style={styles.submitButton}
+          onPress={() => {
+            setPrompt("Celebrate Havdalah");
           }}
         ></Button>
       </View>
@@ -88,15 +122,20 @@ export default function App() {
             <Text style={styles.Chevrutim}>Coby</Text>
             <Text style={styles.Chevrutim}>Shmooly</Text>
             <Text style={styles.Chevrutim}>Mooly</Text>
+            {chevruta ? (
+              <Text style={styles.Chevrutim}>Buff Rabbi</Text>
+            ) : (
+              <View></View>
+            )}
           </View>
           <View>
-            {chevrutaBuff == false ? (
+            {!chevruta ? (
               <View>
                 <Text style={styles.ChevrutimTitle}>POTENTIAL CHEVRUTIM</Text>
                 <Button
                   title="Buff Rabbi"
                   style={styles.Chevrutim}
-                  onPress={chevrutaBuffToggle()}
+                  onPress={chevrutaBuffToggle}
                 ></Button>
               </View>
             ) : (
@@ -106,6 +145,10 @@ export default function App() {
         </ScrollView>
       </View>
     );
+  };
+
+  const AboutUsScreen = () => {
+    return <View></View>;
   };
 
   const toggleDevVisibility = () => {
@@ -139,14 +182,24 @@ export default function App() {
   };
 
   const chevrutaBuffToggle = () => {
-    chevrutaBuff = true;
+    setChevruta(true);
+  };
+
+  const setRandomPrompt = () => {
+    let rando = Math.floor(Math.random() * 3);
+
+    while (randomPrompt[rando] == prompt) {
+      rando = Math.floor(Math.random() * 3);
+      console.log(rando);
+    }
+    setPrompt(randomPrompt[rando]);
+    console.log(prompt);
   };
 
   useEffect(() => {
     (async () => {
       if (Platform.OS === "android" && !Constants.isDevice) {
         setHasCameraPermission(false);
-        setHasGalleryPermission(false);
         console.log(
           "Sorry, this will not work on Sketch in an Android emulator. Try it on your device!"
         );
@@ -157,7 +210,6 @@ export default function App() {
       setHasCameraPermission(cameraStatus === "granted");
       const { status: galleryStatus } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasGalleryPermission(galleryStatus === "granted");
     })();
   }, []);
 
@@ -177,6 +229,7 @@ export default function App() {
   }, [camera]);
 
   const submitPhoto = () => {
+    console.log(prompt);
     if (image) {
       togglePlaceHolderPhotoVisibility();
       setGalleryImages([...galleryImages, image]);
@@ -215,9 +268,7 @@ export default function App() {
             </TouchableOpacity>
             <View style={styles.cameraButton}>
               <Button
-                title={
-                  !isPlaceHolderPhotoVisible ? "Wrap Tfillin" : "Kol Hakavod!"
-                }
+                title={!isPlaceHolderPhotoVisible ? prompt : "Kol Hakavod!"}
                 onPress={() => {
                   takePictureREAL();
                 }}
@@ -296,9 +347,9 @@ export default function App() {
                       source={require("./dummy5.jpg")}
                       style={styles.galleryFriendImage}
                     />
-                    {chevrutaBuff == true ? (
+                    {chevruta == true ? (
                       <Image
-                        source={require("./dummy5.jpg")}
+                        source={require("./dummy8.jpg")}
                         style={styles.galleryFriendImage}
                       />
                     ) : null}
@@ -306,13 +357,15 @@ export default function App() {
                 </ScrollView>
               </View>
             </View>
-            {!isDevVisible && (
+            {!isDevVisible ? (
               <View style={styles.galleryTitle}>
                 <Button
-                  title={isDevVisible ? "Hide" : "Show"}
+                  title={isDevVisible ? "Hide" : "Menu"}
                   onPress={toggleDevVisibility}
                 />
               </View>
+            ) : (
+              <View></View>
             )}
           </ScrollView>
         </ImageBackground>
@@ -323,6 +376,7 @@ export default function App() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Friends" component={FriendsScreen} />
+          <Stack.Screen name="About Us" component={AboutUsScreen} />
         </Stack.Navigator>
       )}
     </NavigationContainer>
