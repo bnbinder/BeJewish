@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Platform,
+  ImageBackground,
   PermissionsAndroid,
   ScrollView,
 } from "react-native";
@@ -14,7 +15,6 @@ import { Camera, CameraType } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import firstImg from "./dummy5.jpg";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -45,6 +45,10 @@ export default function App() {
           onPress={() => navigation.navigate("Profile")}
         ></Button>
         <Button
+          title="Chevrutim"
+          onPress={() => navigation.navigate("Friends")}
+        ></Button>
+        <Button
           title={isDevVisible ? "Hide" : "Show"}
           onPress={toggleDevVisibility}
         />
@@ -71,6 +75,10 @@ export default function App() {
       </View>
     );
   };
+
+  const ProfileScreen = ({ navigation, route }) => {
+    return ()
+};
 
   const toggleDevVisibility = () => {
     setIsDevVisible(!isDevVisible);
@@ -147,123 +155,131 @@ export default function App() {
   return (
     <NavigationContainer style={styles.home}>
       <View style={styles.container}>
-        <ScrollView style={{ flex: 1 }}>
-          <TouchableOpacity onPress={toggleIsCameraFullScreen}>
-            <View
-              style={
-                !isCameraFullScreen ? styles.cameraContainer : fullScreenStyle
-              }
-            >
-              {hasCameraPermission ? (
-                <>
-                  <Camera
-                    ref={(ref) => setCamera(ref)}
-                    style={styles.camera}
-                    type={Camera.Constants.Type.front}
-                    captureSize="Medium"
-                    ratio="4:3"
-                  />
-                </>
-              ) : (
-                <Text>No access to camera</Text>
-              )}
-            </View>
-          </TouchableOpacity>
-          <View style={styles.cameraButton}>
-            <Button
-              title={
-                !isPlaceHolderPhotoVisible ? "Wrap Tfillin" : "Kol Hakavod!"
-              }
-              onPress={() => {
-                takePictureREAL();
-              }}
-            ></Button>
-          </View>
-          <TouchableOpacity onPress={toggleIsSubmitPhotoFullScreen}>
-            <View
-              style={
-                !isSubmitPhotoScreen
-                  ? styles.imageContainer
-                  : image
-                  ? fullScreenStyle
-                  : styles.imageContainer
-              }
-            >
-              {image ? (
-                <Image source={{ uri: image }} style={styles.image} />
-              ) : isPlaceHolderPhotoVisible ? (
-                <Image
-                  source={require("./dummy6.jpg")}
-                  style={styles.image}
-                ></Image>
-              ) : (
-                <Image
-                  source={require("./dummy7.jpg")}
-                  style={styles.image}
-                ></Image>
-              )}
-            </View>
-          </TouchableOpacity>
-          <View style={{ flex: 1, flexDirection: "column" }}>
-            <View style={styles.galleryContainer}>
+        <ImageBackground
+          source={require("./back.jpg")}
+          style={styles.background}
+        >
+          <ScrollView style={{ flex: 1 }}>
+            <TouchableOpacity onPress={toggleIsCameraFullScreen}>
+              <View
+                style={
+                  !isCameraFullScreen ? styles.cameraContainer : fullScreenStyle
+                }
+              >
+                {hasCameraPermission ? (
+                  <>
+                    <Camera
+                      ref={(ref) => setCamera(ref)}
+                      style={styles.camera}
+                      type={Camera.Constants.Type.front}
+                      captureSize="Medium"
+                      ratio="4:3"
+                    />
+                  </>
+                ) : (
+                  <Text>No access to camera</Text>
+                )}
+              </View>
+            </TouchableOpacity>
+            <View style={styles.cameraButton}>
               <Button
                 title={
-                  !isPlaceHolderPhotoVisible
-                    ? "Submit Photo"
-                    : "Submitted Photo"
+                  !isPlaceHolderPhotoVisible ? "Wrap Tfillin" : "Kol Hakavod!"
                 }
-                style={styles.submitButton}
                 onPress={() => {
-                  submitPhoto();
+                  takePictureREAL();
                 }}
               ></Button>
-              <View style={styles.gallery}>
-                {galleryImages.map((uri) => (
+            </View>
+            <TouchableOpacity onPress={toggleIsSubmitPhotoFullScreen}>
+              <View
+                style={
+                  !isSubmitPhotoScreen
+                    ? styles.imageContainer
+                    : image
+                    ? fullScreenStyle
+                    : styles.imageContainer
+                }
+              >
+                {image ? (
+                  <Image source={{ uri: image }} style={styles.image} />
+                ) : isPlaceHolderPhotoVisible ? (
                   <Image
-                    key={uri}
-                    source={{ uri }}
-                    style={styles.galleryImage}
-                  />
-                ))}
+                    source={require("./dummy6.jpg")}
+                    style={styles.image}
+                  ></Image>
+                ) : (
+                  <Image
+                    source={require("./dummy7.jpg")}
+                    style={styles.image}
+                  ></Image>
+                )}
+              </View>
+            </TouchableOpacity>
+            <View style={{ flex: 1, flexDirection: "column" }}>
+              <View style={styles.cameraButton}>
+                <Button
+                  title={
+                    !isPlaceHolderPhotoVisible
+                      ? "Submit Photo"
+                      : "Submitted Photo"
+                  }
+                  style={styles.submitButton}
+                  onPress={() => {
+                    submitPhoto();
+                  }}
+                ></Button>
+                <View style={styles.gallery}>
+                  {galleryImages.map((uri) => (
+                    <Image
+                      key={uri}
+                      source={{ uri }}
+                      style={styles.galleryImage}
+                    />
+                  ))}
+                </View>
+              </View>
+
+              <View style={styles.friendsGalleryContainer}>
+                <Text style={styles.galleryTitle}>My Friends' Photos</Text>
+                <ScrollView style={{ flex: 1 }} horizontal>
+                  <View style={styles.gallery}>
+                    <Image
+                      source={require("./dummy1.jpg")}
+                      style={styles.galleryFriendImage}
+                    />
+                    <Image
+                      source={require("./dummy2.jpg")}
+                      style={styles.galleryFriendImage}
+                    />
+                    <Image
+                      source={require("./dummy3.jpg")}
+                      style={styles.galleryFriendImage}
+                    />
+                    <Image
+                      source={require("./dummy4.jpg")}
+                      style={styles.galleryFriendImage}
+                    />
+                    <Image
+                      source={require("./dummy5.jpg")}
+                      style={styles.galleryFriendImage}
+                    />
+                  </View>
+                </ScrollView>
               </View>
             </View>
-
-            <View style={styles.friendsGalleryContainer}>
-              <Text style={styles.galleryTitle}>My Friends' Photos</Text>
-              <ScrollView style={{ flex: 1 }} horizontal>
-                <View style={styles.gallery}>
-                  <Image
-                    source={require("./dummy1.jpg")}
-                    style={styles.galleryFriendImage}
-                  />
-                  <Image
-                    source={require("./dummy2.jpg")}
-                    style={styles.galleryFriendImage}
-                  />
-                  <Image
-                    source={require("./dummy3.jpg")}
-                    style={styles.galleryFriendImage}
-                  />
-                  <Image
-                    source={require("./dummy4.jpg")}
-                    style={styles.galleryFriendImage}
-                  />
-                  <Image
-                    source={require("./dummy5.jpg")}
-                    style={styles.galleryFriendImage}
-                  />
-                </View>
-              </ScrollView>
-            </View>
-          </View>
-          {!isDevVisible && (
-            <Button
-              title={isDevVisible ? "Hide" : "Show"}
-              onPress={toggleDevVisibility}
-            />
-          )}
-        </ScrollView>
+            {!isDevVisible && (
+              <View style={styles.galleryTitle}>
+                <Button
+                  title={isDevVisible ? "Hide" : "Show"}
+                  onPress={toggleDevVisibility}
+                />
+              </View>
+            )}
+          </ScrollView>
+        </ImageBackground>
       </View>
+
       {isDevVisible && (
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} />
@@ -336,6 +352,14 @@ const styles = StyleSheet.create({
   galleryTitle: {
     fontSize: 20,
     marginBottom: 10,
+    backgroundColor: "red",
+    justifyContent: "flex-end",
+    fontColor: "white",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 5,
+    margin: 20,
+    alignSelf: "center",
   },
   gallery: {
     flexDirection: "row",
