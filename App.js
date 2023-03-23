@@ -28,6 +28,7 @@ export default function App() {
   const [isPlaceHolderPhotoVisible, setIsPlaceHolderPhotoVisible] =
     useState(false);
   let sourceeImage = require("./dummy5.jpg");
+  let chevrutaBuff = false;
   const randomPrompt = ["Donate to SOVA", "Study Torah"];
   const length = galleryImages.length;
   const galleryImagesFullScreen = Array.from({ length }, () => false);
@@ -76,9 +77,36 @@ export default function App() {
     );
   };
 
-  const ProfileScreen = ({ navigation, route }) => {
-    return ()
-};
+  const FriendsScreen = ({ navigation, route }) => {
+    return (
+      <View style={{ marginBottom: 60 }}>
+        <ScrollView>
+          <View>
+            <Text style={styles.ChevrutimTitle}>CHEVRUTIM LIST</Text>
+            <Text style={styles.Chevrutim}>Seth</Text>
+            <Text style={styles.Chevrutim}>Eitan</Text>
+            <Text style={styles.Chevrutim}>Coby</Text>
+            <Text style={styles.Chevrutim}>Shmooly</Text>
+            <Text style={styles.Chevrutim}>Mooly</Text>
+          </View>
+          <View>
+            {chevrutaBuff == false ? (
+              <View>
+                <Text style={styles.ChevrutimTitle}>POTENTIAL CHEVRUTIM</Text>
+                <Button
+                  title="Buff Rabbi"
+                  style={styles.Chevrutim}
+                  onPress={chevrutaBuffToggle()}
+                ></Button>
+              </View>
+            ) : (
+              <View></View>
+            )}
+          </View>
+        </ScrollView>
+      </View>
+    );
+  };
 
   const toggleDevVisibility = () => {
     setIsDevVisible(!isDevVisible);
@@ -108,6 +136,10 @@ export default function App() {
   const toggleGalleryImagesFullScreen = (numba) => {
     galleryImagesFullScreen.fill(false);
     galleryImagesFullScreen[numba] = !galleryImagesFullScreen[numba];
+  };
+
+  const chevrutaBuffToggle = () => {
+    chevrutaBuff = true;
   };
 
   useEffect(() => {
@@ -264,6 +296,12 @@ export default function App() {
                       source={require("./dummy5.jpg")}
                       style={styles.galleryFriendImage}
                     />
+                    {chevrutaBuff == true ? (
+                      <Image
+                        source={require("./dummy5.jpg")}
+                        style={styles.galleryFriendImage}
+                      />
+                    ) : null}
                   </View>
                 </ScrollView>
               </View>
@@ -284,6 +322,7 @@ export default function App() {
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Friends" component={FriendsScreen} />
         </Stack.Navigator>
       )}
     </NavigationContainer>
@@ -390,5 +429,24 @@ const styles = StyleSheet.create({
     height: 300,
     alignItems: "center",
     marginTop: 20,
+  },
+  ChevrutimTitle: {
+    fontSize: 30,
+    marginTop: 40,
+    justifyContent: "flex-end",
+    fontColor: "white",
+
+    borderRadius: 5,
+    margin: 20,
+    alignSelf: "center",
+  },
+  Chevrutim: {
+    fontSize: 20,
+    justifyContent: "flex-end",
+    fontColor: "white",
+    alignItems: "center",
+    borderRadius: 5,
+    margin: 10,
+    alignSelf: "center",
   },
 });
