@@ -14,6 +14,7 @@ import { Camera, CameraType } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import firstImg from "./dummy5.jpg";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -26,6 +27,8 @@ export default function App() {
   const [isSubmitPhotoScreen, setIsSubmitPhotoFullScreen] = useState(false);
   const [isPlaceHolderPhotoVisible, setIsPlaceHolderPhotoVisible] =
     useState(false);
+  let sourceeImage = require("./dummy5.jpg");
+  const randomPrompt = ["Donate to SOVA", "Study Torah"];
   const length = galleryImages.length;
   const galleryImagesFullScreen = Array.from({ length }, () => false);
 
@@ -50,13 +53,22 @@ export default function App() {
   };
   const ProfileScreen = ({ navigation, route }) => {
     return (
-      <Button
-        title="Reset Submit Photo"
-        style={styles.submitButton}
-        onPress={() => {
-          resetSubmitPhoto();
-        }}
-      ></Button>
+      <View>
+        <Button
+          title="Reset Submit Photo"
+          style={styles.submitButton}
+          onPress={() => {
+            resetSubmitPhoto();
+          }}
+        ></Button>
+        <Button
+          title="Random Prompt"
+          style={styles.submitButton}
+          onPress={() => {
+            resetSubmitPhoto();
+          }}
+        ></Button>
+      </View>
     );
   };
 
@@ -124,17 +136,6 @@ export default function App() {
     }
   }, [camera]);
 
-  const pickImage = async () => {
-    const { cancelled, uri } = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-    if (!cancelled) {
-      setImage(uri);
-    }
-  };
-
   const submitPhoto = () => {
     if (image) {
       togglePlaceHolderPhotoVisibility();
@@ -181,10 +182,26 @@ export default function App() {
           <TouchableOpacity onPress={toggleIsSubmitPhotoFullScreen}>
             <View
               style={
-                !isSubmitPhotoScreen ? styles.imageContainer : fullScreenStyle
+                !isSubmitPhotoScreen
+                  ? styles.imageContainer
+                  : image
+                  ? fullScreenStyle
+                  : styles.imageContainer
               }
             >
-              {image && <Image source={{ uri: image }} style={styles.image} />}
+              {image ? (
+                <Image source={{ uri: image }} style={styles.image} />
+              ) : isPlaceHolderPhotoVisible ? (
+                <Image
+                  source={require("./dummy6.jpg")}
+                  style={styles.image}
+                ></Image>
+              ) : (
+                <Image
+                  source={require("./dummy7.jpg")}
+                  style={styles.image}
+                ></Image>
+              )}
             </View>
           </TouchableOpacity>
           <View style={{ flex: 1, flexDirection: "column" }}>
@@ -293,8 +310,9 @@ const styles = StyleSheet.create({
   imageContainer: {
     paddingTop: 30,
     width: "100%",
-    height: 150,
+    height: 200,
     alignItems: "center",
+    marginBottom: 20,
   },
   image: {
     width: "100%",
@@ -340,7 +358,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
   },
   friendsGalleryContainer: {
     flex: 1,
