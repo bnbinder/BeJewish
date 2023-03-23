@@ -10,7 +10,7 @@ import {
   PermissionsAndroid,
   ScrollView,
 } from "react-native";
-import { Camera } from "expo-camera";
+import { Camera, CameraType } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -26,15 +26,19 @@ export default function App() {
     return (
       <View style={styles.container}>
         <ScrollView style={{ flex: 1 }}>
+          <Button
+            title="Go to Jane's profile"
+            onPress={() => navigation.navigate("Profile", { name: "Jane" })}
+          ></Button>
           <View style={styles.cameraContainer}>
             {hasCameraPermission ? (
               <>
                 <Camera
-                  ref={ref=>setCamera(ref)}
+                  ref={(ref) => setCamera(ref)}
                   style={styles.camera}
                   type={Camera.Constants.Type.front}
+                  captureSize="Medium"
                   ratio="4:3"
-                  pictureSize="Medium"
                 />
               </>
             ) : (
@@ -117,7 +121,7 @@ export default function App() {
       });
       setImage(uri);
     } else {
-      console.log("camera is null");
+      console.log("camera is: " + camera);
     }
   }, [camera]);
 
