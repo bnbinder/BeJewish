@@ -132,6 +132,7 @@ export default function App() {
             <Text style={styles.Chevrutim}>Seth</Text>
             <Text style={styles.Chevrutim}>Eitan</Text>
             <Text style={styles.Chevrutim}>Coby</Text>
+            <Text style={styles.Chevrutim}>Nathan</Text>
             <Text style={styles.Chevrutim}>Shmooly</Text>
             <Text style={styles.Chevrutim}>Mooly</Text>
             {chevruta ? (
@@ -160,7 +161,22 @@ export default function App() {
   };
 
   const AboutUsScreen = () => {
-    return <View></View>;
+    return (
+      <View>
+        <Text
+          style={{
+            fontSize: 20,
+            marginTop: 20,
+            textAlign: "center",
+          }}
+        >
+          We founded this project as part of our Jewish Thought class as Milken
+          Community School. We're all passionate Jews with an interest in
+          technology and wanted to explore the intersection between these two
+          mediums.
+        </Text>
+      </View>
+    );
   };
 
   const toggleDevVisibility = () => {
@@ -298,9 +314,7 @@ export default function App() {
       togglePlaceHolderPhotoVisibility();
       setGalleryImages([...galleryImages, image]);
       setImage(null);
-      scheduleNotification([
-        "Kol Hakavod!"
-      ]);
+      scheduleNotification(["Kol Hakavod!"]);
     }
   };
 
@@ -355,7 +369,7 @@ export default function App() {
                   <Image source={{ uri: image }} style={styles.image} />
                 ) : isPlaceHolderPhotoVisible ? (
                   <Image
-                    source={require("./dummy6.jpg")}
+                    source={require("./dummy9.jpg")}
                     style={styles.image}
                   ></Image>
                 ) : (
@@ -404,6 +418,10 @@ export default function App() {
                     />
                     <Image
                       source={require("./dummy3.jpg")}
+                      style={styles.galleryFriendImage}
+                    />
+                    <Image
+                      source={require("./dummy10.jpg")}
                       style={styles.galleryFriendImage}
                     />
                     <Image
@@ -514,7 +532,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "red",
     justifyContent: "flex-end",
-    fontColor: "white",
     alignItems: "center",
     padding: 10,
     borderRadius: 5,
