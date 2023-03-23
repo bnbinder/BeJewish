@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -21,17 +21,27 @@ export default function App() {
   const [camera, setCamera] = useState(null);
   const [image, setImage] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
+  const [isVisible, setIsVisible] = useState(true);
 
   const HomeScreen = ({ navigation }) => {
-    return <Text style={styles.home}>    <Button
-    title="Go to Jane's profile"
-    onPress={() => navigation.navigate("Profile", { name: "Jane" })}
-  ></Button></Text>;
+    return (
+      <Text style={styles.home}>
+        {" "}
+        <Button
+          title="Go to Jane's profile"
+          onPress={() => navigation.navigate("Profile", { name: "Jane" })}
+        ></Button>
+      </Text>
+    );
   };
   const ProfileScreen = ({ navigation, route }) => {
     return (
       <Text style={styles.home}>This is {route.params.name}'s profile</Text>
     );
+  };
+
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
   };
 
   useEffect(() => {
@@ -85,7 +95,6 @@ export default function App() {
   return (
     <NavigationContainer style={styles.home}>
       <View style={styles.container}>
-    
         <ScrollView style={{ flex: 1 }}>
           <View style={styles.cameraContainer}>
             {hasCameraPermission ? (
@@ -144,12 +153,18 @@ export default function App() {
               </View>
             </View>
           </View>
+          <Button
+            title={isVisible ? "Hide" : "Show"}
+            onPress={toggleVisibility}
+          />
         </ScrollView>
       </View>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-      </Stack.Navigator>
+      {isVisible && (
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 }
