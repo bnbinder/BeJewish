@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -23,13 +23,70 @@ export default function App() {
   const [galleryImages, setGalleryImages] = useState([]);
 
   const HomeScreen = ({ navigation }) => {
+    return <Text style={styles.home}>    <Button
+    title="Go to Jane's profile"
+    onPress={() => navigation.navigate("Profile", { name: "Jane" })}
+  ></Button></Text>;
+  };
+  const ProfileScreen = ({ navigation, route }) => {
     return (
+      <Text style={styles.home}>This is {route.params.name}'s profile</Text>
+    );
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS === "android" && !Constants.isDevice) {
+        setHasCameraPermission(false);
+        setHasGalleryPermission(false);
+        console.log(
+          "Sorry, this will not work on Sketch in an Android emulator. Try it on your device!"
+        );
+        return;
+      }
+      const { status: cameraStatus } =
+        await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraStatus === "granted");
+      const { status: galleryStatus } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasGalleryPermission(galleryStatus === "granted");
+    })();
+  }, []);
+
+  const takePicture = useCallback(async () => {
+    if (camera != null) {
+      const { uri } = await camera.takePictureAsync().catch((error) => {
+        console.log(error);
+      });
+      setImage(uri);
+    } else {
+      console.log("camera is: " + camera);
+    }
+  }, [camera]);
+
+  const pickImage = async () => {
+    const { cancelled, uri } = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!cancelled) {
+      setImage(uri);
+    }
+  };
+
+  const submitPhoto = () => {
+    if (image) {
+      setGalleryImages([...galleryImages, image]);
+      setImage(null);
+    }
+  };
+
+  return (
+    <NavigationContainer style={styles.home}>
       <View style={styles.container}>
+    
         <ScrollView style={{ flex: 1 }}>
-          <Button
-            title="Go to Jane's profile"
-            onPress={() => navigation.navigate("Profile", { name: "Jane" })}
-          ></Button>
           <View style={styles.cameraContainer}>
             {hasCameraPermission ? (
               <>
@@ -89,68 +146,8 @@ export default function App() {
           </View>
         </ScrollView>
       </View>
-    );
-  };
-  const ProfileScreen = ({ navigation, route }) => {
-    return <Text>This is {route.params.name}'s profile</Text>;
-  };
-
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS === "android" && !Constants.isDevice) {
-        setHasCameraPermission(false);
-        setHasGalleryPermission(false);
-        console.log(
-          "Sorry, this will not work on Sketch in an Android emulator. Try it on your device!"
-        );
-        return;
-      }
-      const { status: cameraStatus } =
-        await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus === "granted");
-      const { status: galleryStatus } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasGalleryPermission(galleryStatus === "granted");
-    })();
-  }, []);
-
-  const takePicture = useCallback(async () => {
-    if (camera != null) {
-      const { uri } = await camera.takePictureAsync().catch((error) => {
-        console.log(error);
-      });
-      setImage(uri);
-    } else {
-      console.log("camera is: " + camera);
-    }
-  }, [camera]);
-
-  const pickImage = async () => {
-    const { cancelled, uri } = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-    if (!cancelled) {
-      setImage(uri);
-    }
-  };
-
-  const submitPhoto = () => {
-    if (image) {
-      setGalleryImages([...galleryImages, image]);
-      setImage(null);
-    }
-  };
-
-  return (
-    <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: "Welcome" }}
-        />
+        <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -158,6 +155,9 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  home: {
+    height: "10%",
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
