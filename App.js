@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Button,
   StyleSheet,
@@ -15,7 +15,14 @@ import { Camera, CameraType } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
+import * as Notifications from "expo-notifications";
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 const Stack = createNativeStackNavigator();
 export default function App() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -41,6 +48,11 @@ export default function App() {
   const [prompt, setPrompt] = useState("Wrap Tfillin");
   const length = galleryImages.length;
   const galleryImagesFullScreen = Array.from({ length }, () => false);
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   const fullScreenStyle = {
     width: "100%",
@@ -90,21 +102,21 @@ export default function App() {
           title="Friday Prompt"
           style={styles.submitButton}
           onPress={() => {
-            setPrompt("Welcome In Shabbat");
+            setPromptPrompt("Welcome In Shabbat");
           }}
         ></Button>
         <Button
           title="Saturday Prompt"
           style={styles.submitButton}
           onPress={() => {
-            setPrompt("Celebrate Shabbat");
+            setPromptPrompt("Celebrate Shabbat");
           }}
         ></Button>
         <Button
           title="Sunday Prompt"
           style={styles.submitButton}
           onPress={() => {
-            setPrompt("Celebrate Havdalah");
+            setPromptPrompt("Celebrate Havdalah");
           }}
         ></Button>
       </View>
@@ -161,9 +173,19 @@ export default function App() {
     }
   };
 
+  const setPromptPrompt = (prom) => {
+    setPrompt(prom);
+    scheduleNotification([
+      "Dont Forget To Take Your BeJewish and " + prom + "!",
+    ]);
+  };
+
   const resetSubmitPhoto = () => {
     setIsPlaceHolderPhotoVisible(false);
     setGalleryImages([]);
+    scheduleNotification([
+      "Dont Forget To Take Your BeJewish and " + prompt + "!",
+    ]);
   };
 
   const toggleIsCameraFullScreen = () => {
@@ -194,27 +216,69 @@ export default function App() {
     }
     setPrompt(randomPrompt[rando]);
     console.log(prompt);
+    scheduleNotification([
+      "Dont Forget To Take Your BeJewish and " + randomPrompt[rando] + "!",
+    ]);
   };
 
   useEffect(() => {
+    scheduleNotification(["Dont Forget To Take Your BeJewish!"]);
     (async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== "granted") {
+          alert("You need to grant permission to receive notifications.");
+        }
+      }
       if (Platform.OS === "android" && !Constants.isDevice) {
         setHasCameraPermission(false);
         console.log(
           "Sorry, this will not work on Sketch in an Android emulator. Try it on your device!"
         );
-        return;
       }
       const { status: cameraStatus } =
         await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus === "granted");
       const { status: galleryStatus } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      registerForPushNotificationsAsync().then((token) =>
+        setExpoPushToken(token)
+      );
+
+      notificationListener.current =
+        Notifications.addNotificationReceivedListener((notification) => {
+          setNotification(notification);
+        });
+
+      responseListener.current =
+        Notifications.addNotificationResponseReceivedListener((response) => {});
+
+      return () => {
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        );
+        Notifications.removeNotificationSubscription(responseListener.current);
+      };
     })();
   }, []);
 
   const takePictureREAL = () => {
     if (!isPlaceHolderPhotoVisible) takePicture();
+  };
+
+  Notifications.addNotificationReceivedListener((notification) => {});
+
+  const scheduleNotification = async ([titleNot, bodyNot, dataNot]) => {
+    Notifications.scheduleNotificationAsync({
+      content: {
+        title: titleNot,
+        body: bodyNot,
+        data: { myData: dataNot },
+      },
+      trigger: { seconds: 1 },
+    });
   };
 
   const takePicture = useCallback(async () => {
@@ -234,6 +298,9 @@ export default function App() {
       togglePlaceHolderPhotoVisibility();
       setGalleryImages([...galleryImages, image]);
       setImage(null);
+      scheduleNotification([
+        "Kol Hakavod!"
+      ]);
     }
   };
 
