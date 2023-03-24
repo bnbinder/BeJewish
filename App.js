@@ -133,10 +133,10 @@ export default function App() {
             <Text style={styles.Chevrutim}>Eitan</Text>
             <Text style={styles.Chevrutim}>Coby</Text>
             <Text style={styles.Chevrutim}>Nathan</Text>
-            <Text style={styles.Chevrutim}>Shmooly</Text>
-            <Text style={styles.Chevrutim}>Mooly</Text>
+            <Text style={styles.Chevrutim}>Jeff</Text>
+            <Text style={styles.Chevrutim}>Levi</Text>
             {chevruta ? (
-              <Text style={styles.Chevrutim}>Buff Rabbi</Text>
+              <Text style={styles.Chevrutim}>Rabbi KB</Text>
             ) : (
               <View></View>
             )}
@@ -146,7 +146,7 @@ export default function App() {
               <View>
                 <Text style={styles.ChevrutimTitle}>POTENTIAL CHEVRUTIM</Text>
                 <Button
-                  title="Buff Rabbi"
+                  title="Rabbi KB"
                   style={styles.Chevrutim}
                   onPress={chevrutaBuffToggle}
                 ></Button>
@@ -434,7 +434,7 @@ export default function App() {
                     />
                     {chevruta == true ? (
                       <Image
-                        source={require("./dummy8.jpg")}
+                        source={require("./dummy11.jpg")}
                         style={styles.galleryFriendImage}
                       />
                     ) : null}
