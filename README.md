@@ -2,8 +2,7 @@
 
 ## Installation
 1. download this repo (i use vscode)
-2. open le terminal
-3. npm install these dependencies
+2. npm install these dependencies in terminal
 ```
 @expo/webpack-config 18.0.1,
 @react-navigation/native 6.1.6
@@ -22,7 +21,7 @@ react-native-web 0.18.10
 ```
 
 ## how 2 run
-1. npm start
+1. run ```npm start``` in terminal
 2. download expo app
 3. scan qr code with photos
 4. it opens automatically
