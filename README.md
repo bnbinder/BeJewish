@@ -2,7 +2,7 @@
 
 ## Installation
 1. download this repo (i use vscode)
-2. npm install these dependencies in terminal
+2. npm install these dependencies in terminal (may need to install latest version of some if running gives error)
 ```
 @expo/webpack-config 18.0.1,
 @react-navigation/native 6.1.6
