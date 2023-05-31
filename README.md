@@ -38,4 +38,4 @@ react-native-web 0.18.10
 <br>
 <br>
 
-# click rocket on profile to donate so i can make full app (so i can pay for software developer team)
+# pls donate so i can make full app (so i can pay for software developer team)
