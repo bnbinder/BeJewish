@@ -37,5 +37,6 @@ react-native-web 0.18.10
 - https://stackoverflow.com/questions/64734935/how-do-you-set-default-connection-to-tunnel-with-expo
 <br>
 <br>
-
+<!---
 # pls donate so i can make full app (so i can pay for software developer team)
+--->
